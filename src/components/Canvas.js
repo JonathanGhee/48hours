@@ -61,17 +61,17 @@ const Canvas = props => {
     setPlaying(false)
     setCurrCount(0)
   }
-  let generateDots = () => {
+  let generateDots = () => { // webpack might be building dist files into es5 and its not tracking default params
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
     let arr = []
-    for(let i=0;i<2;i++) {
+    for(let i=0;i < 10;i++) {
       let x = Math.random() * canvas.width;
       let y = Math.random() * canvas.height;
-
       let r = Math.random()*255
       let g = Math.random()*255
       let b = Math.random()*255
+
       let obj = {
         x:x.toFixed(),
         y:y.toFixed(),
@@ -83,12 +83,10 @@ const Canvas = props => {
       context.fillStyle = `rgb(${r}, ${g}, ${b})`
       context.fillRect(x,y, 8, 8);
     }
-
     setGameConfig(arr)
     setPlaying(true)
     setPlayerCount([])
     setCurrCount(0)
-
   }
   let positionTracker = (e) => {
     if(playing && currCount< gameConfig.length) {
@@ -105,7 +103,7 @@ const Canvas = props => {
   }
   let calculate = (cpu,player) => {
 
-    if(cpu.length<1 || player.length<1) return
+    if(cpu.length !== player.length) return
     let result = []
     for(let i in cpu) {
       let arr = []
@@ -113,7 +111,7 @@ const Canvas = props => {
         let obj = {
           cpu:cpu[i],
           player:player[i],
-          distance:Math.sqrt(  Math.abs(cpu[i].x - player[i].x)**2 + Math.abs(cpu[i].y - player[i].y)**2  ).toFixed()
+          distance:Math.sqrt( Math.abs(cpu[i].x - player[i].x)**2 + Math.abs(cpu[i].y - player[i].y)**2 ).toFixed()
         }
         arr.push(obj)
       }
@@ -128,10 +126,43 @@ const Canvas = props => {
           }
           return obj
         }
-        
+
         result.push(minDistance(arr))
     }
-    //console.log(result)
+    // handle submissions where player attempts < game elements
+    displayHitMiss(result)
+  }
+  let generateDot = (color, x, y ) => {
+    //console.log(arguments)
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')
+    context.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`
+    context.fillRect(x,y, 9, 9);
+  }
+
+  let displayHitMiss = (arr) => {
+
+    for(let i in arr) {
+      let color = {
+      }
+      let {distance, cpu } = arr[i]
+      console.log(distance)
+      if(distance <= 150) {
+        //green
+        console.log('a ',color)
+        color.r = 0
+        color.g = 255
+        color.b = 0
+        console.log(color, cpu)
+        generateDot(color, cpu.x, cpu.y)
+      } else {
+        //draw red dot
+        color.r = 255
+        color.g = 0
+        color.b = 0
+        generateDot(color, cpu.x, cpu.y)
+      }
+    }
   }
  // console.log(gameConfig,playing,props.data,currCount,playerCount)
   return (
