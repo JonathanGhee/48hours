@@ -7,20 +7,22 @@ mongoose.connect('mongodb://127.0.0.1:27017/mvp').then(()=>{
 })
 
 const instanceSchema = new Schema({
-  id: {
-    type: Number,
-    required: true,
+
+  cpu: {
+    x:{type: Number},
+    y:{type: Number}
   },
-  name: {
-    type: String,
-    default: null
-  }
+  player: {
+    x:{type: Number},
+    y:{type: Number}
+  },
+  distance:{type: Number}
 })
 
 const Instance = mongoose.model('Sample', instanceSchema);
 
 const saveSample = (toSave) => {
-  return Instance.create(toSave)
+  return Instance.create(toSave).then(data => console.log(data))
     .catch(err => console.error(err.message))
 }
 

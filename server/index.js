@@ -1,17 +1,19 @@
 const express = require('express');
-
-const Samples= require('./database/index.js');
+const cors = require('cors');
+const db = require('../database/index.js')
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-
-app.get('/', (req, res) => {
-
-});
+app.post('/', (req, res) => {
+  for(let i in req.body) {
+    db.save(req.body[i])
+    .catch(err => console.error(err))
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
